@@ -67,18 +67,9 @@ def endloop(): #function called to close the program under normal circumstances
     quitter()
 
 def quitter():
-    global output, projectname, wordcount, targetwordcount, lastchar
-    userinput = input("Check that you can see " + projectname + ".txt before closing \nStill keen? Y/N ")
-    if userinput == "y" or userinput == "Y":
-        output = projectname = "" #reset
-        wordcount = targetwordcount = lastchar = 0 #reset
-        os.system('cls') #clear screen
-        print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
-        gettargetwordcount()
-    if userinput == "n" or userinput == "N":
-        pass
-    else:
-        quitter()
+    global projectname
+    input("Check that you can see " + projectname + ".txt before pressing Enter to close")
+    sys.exit()
         
 def autosave():
     global wordcount, projectname
