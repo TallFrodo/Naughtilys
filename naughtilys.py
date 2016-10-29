@@ -14,23 +14,28 @@
     #Fix function names
 
 #*****IMPORTS*****
-import msvcrt,os,sys,time #MS specific tools to get character and clear screen. Will need jimmying if you want other OSes
-
+try:
+    import msvcrt,os,sys,time #MS specific tools to get character and clear screen. Will need jimmying if you want other OSes
+except:
+    import tty,os,sys,time
+    print("Missing system files. Your OS probably isn't supported.")
 
 #*****INITIALISE GLOBAL VARS*****
 output = projectname = ""
 wordcount = targetwordcount = lastchar = 0
 
+def _clearscreen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def gettargetwordcount(): #try catch to make sure the wordcount is a valid integer
     global targetwordcount
     userinput = input("Desired word count? ")
     try:
         targetwordcount = int(userinput)
-        os.system('cls') #clear screen
+        _clearscreen()
         getprojectname()
     except ValueError:
-        os.system('cls') #clear screen
+        _clearscreen()
         print("That wasn't a number I understand sorry.")
         gettargetwordcount()
     except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
@@ -38,7 +43,7 @@ def gettargetwordcount(): #try catch to make sure the wordcount is a valid integ
 
 def getprojectname(): #try catch to ensure valid output file
     global projectname, targetwordcount
-    os.system('cls') #clear screen
+    _clearscreen()
     print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
     projectname = input("Project Title? ")
     try: #trycatch to ensure can read the entered projectname
@@ -53,10 +58,10 @@ def getprojectname(): #try catch to ensure valid output file
     except IOError: #if it doesn't already exist...
         try:
             f = open(projectname + ".txt", 'w') #create it
-            os.system('cls') #clear screen
+            _clearscreen()
             print ("New Project " + projectname + ".txt created. Now type.\n" + str(targetwordcount))
         except IOError: #if that fails too, ask for a new name
-            os.system('cls') #clear screen
+            _clearscreen()
             print ("Couldn't find or create " + projectname + ".txt. Try another.")
             getprojectname()
         
@@ -78,19 +83,19 @@ def quitter():
 def autosave():
     global wordcount, projectname
     if wordcount % 50 == 0: #every 50 words
-        os.system('cls') #clear screen
+        _clearscreen()
         print ("***AUTOSAVE***\n" + str(targetwordcount - wordcount)) #output estimated wordcount
         with open(projectname + ".bak", 'a+') as outfile: 
             outfile.write(output) #open file named test.txt in append mode
     if wordcount % 500 == 0: #every 500 words
-        os.system('cls') #clear screen
+        _clearscreen()
         print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount)) #output estimated wordcount
         with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'a+') as outfile: 
             outfile.write(output) #open file named test.txt in append mode
                 
 
 #ACTUAL START OF PROGRAM HERE
-os.system('cls') #clear screen
+_clearscreen()
 print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
 try:
     gettargetwordcount()
@@ -98,10 +103,10 @@ except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
     input("Press Enter to quit")
     sys.exit()
 
-while msvcrt.kbhit: #main loop - whenever there's something in the keyboard buffer
+while 1: #msvcrt.kbhit: #main loop - whenever there's something in the keyboard buffer
     try:
-        char = msvcrt.getch().decode('UTF-8') #get any character input as a raw byte and then convert it as UTF-8 to be readable
-        os.system('cls') #clear screen
+        char = msvcrt.getch().decode('UTF-8') #getchar raw byte, convert it as UTF-8
+        _clearscreen()
         if char == chr(27): #if it sees escape
             endloop()
             break
@@ -131,6 +136,6 @@ while msvcrt.kbhit: #main loop - whenever there's something in the keyboard buff
             if wordcount > 1 & lastchar == 0:
                 autosave() #if you haven't just autosaved, check if it needs to again
     except UnicodeDecodeError: #ignore anything like arrow keys, etc
-        os.system('cls') #clear screen
+        _clearscreen()
         print("Hmm?\n"+ str(targetwordcount - wordcount))
         msvcrt.getch() #discard the next input because most problem keys are two bytes
