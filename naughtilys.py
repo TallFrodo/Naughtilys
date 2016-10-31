@@ -30,7 +30,8 @@ wordcount = targetwordcount = lastchar = 0
 def clear_screen(): #cross-os clearscreen function
     os.system('cls' if os.name == 'nt' else 'clear') #use host_os instead?
 
-def getch
+def getch(host_os):
+    pass
 
 def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
     global targetwordcount
