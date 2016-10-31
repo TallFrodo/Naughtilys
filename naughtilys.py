@@ -30,8 +30,18 @@ wordcount = targetwordcount = lastchar = 0
 def clear_screen(): #cross-os clearscreen function
     os.system('cls' if os.name == 'nt' else 'clear') #use host_os instead?
 
-def getch(host_os):
-    pass
+def get_char_input(host_os): #cross-os return keypress
+    if host_os == "ms": #for windows
+        try:
+            return msvcrt.getch().decode('UTF-8')
+        except UnicodeDecodeError: #ignore anything like arrow keys, etc
+            msvcrt.getch() #discard next input -most problem are keys 2 bytes
+            return "Hmm?"
+        finally:
+            pass
+        
+    if host_os == "unix":
+        return ""
 
 def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
     global targetwordcount
@@ -117,38 +127,35 @@ except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
     sys.exit()
 
 while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
-    try:
-        char = msvcrt.getch().decode('UTF-8') #getchar raw byte &convert UTF-8
-        clear_screen()
-        if char == chr(27): #if it sees escape
-            endloop()
-            break
-        elif char == chr(32): #if it sees a space
-            if lastchar == 1: #make sure lastchar wasn't blank
-                output = output+char #concatenate the space
-                lastchar = 0 #mark lastchar as being blank
-            print ("") #print a blank line
+    char = get_char_input(host_os) #get keyinput based on OS
+    clear_screen()
+    if char == chr(27): #if it sees escape
+        endloop()
+        break
+    elif char == chr(32): #if it sees a space
+        if lastchar == 1: #make sure lastchar wasn't blank
+            output = output+char #concatenate the space
+            lastchar = 0 #mark lastchar as being blank
+        print ("") #print a blank line
+        
+    elif char == chr(13): #if it sees carriage return 
+        if lastchar == 1: #make sure lastchar wasn't blank
+            output = output+char+'\n' #format carriage returns as \n 
+            lastchar = 0 #mark lastchar as being blank
+        print ("") #print a blank line
+    elif char == "Hmm?":
+        print ("Hmm?\n" + (targetwordcount - wordcount))
             
-        elif char == chr(13): #if it sees carriage return 
-            if lastchar == 1: #make sure lastchar wasn't blank
-                output = output+char+'\n' #format carriage returns as \n 
-                lastchar = 0 #mark lastchar as being blank
-            print ("") #print a blank line
-            
-        else: #if it wasn't space, return or esc:
-            lastchar = 1 #set lastchar to not blank
-            output = output+char #concatenate this character to output string
-            print (char), #otherwise print it
-        #get wordcount:
-        wordcount = output.count(' ') + output.count('\n') #easy wordcount hack
-        if wordcount >= targetwordcount: #break if they reach target wordcount
-            endloop()
-            break
-        else :
-            print(targetwordcount - wordcount) #show remaining wordcount
-            if wordcount > 1 & lastchar == 0:
-                autosave() #on blank, see if autosave is needed
-    except UnicodeDecodeError: #ignore anything like arrow keys, etc
-        clear_screen()
-        print("Hmm?\n"+ str(targetwordcount - wordcount))
-        msvcrt.getch() #discard the next input -most problem keys are two bytes
+    else: #if it wasn't space, return or esc:
+        lastchar = 1 #set lastchar to not blank
+        output = output+char #concatenate this character to output string
+        print (char), #otherwise print it
+    #get wordcount:
+    wordcount = output.count(' ') + output.count('\n') #easy wordcount hack
+    if wordcount >= targetwordcount: #break if they reach target wordcount
+        endloop()
+        break
+    else :
+        print(targetwordcount - wordcount) #show remaining wordcount
+        if wordcount > 1 & lastchar == 0:
+            autosave() #on blank, see if autosave is needed
