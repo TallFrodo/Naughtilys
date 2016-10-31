@@ -38,20 +38,15 @@ def get_char_input(host_os): #cross-os return keypress
             msvcrt.getch() #discard next input -most problem are keys 2 bytes
             return "Hmm?"
         
-    if host_os == "unix":
-        #import termios,sys,tty
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
+    if host_os == "unix": #for mac
+        fd = sys.stdin.fileno() #do some oldschool terminal stuff that I copied
+        old_settings = termios.tcgetattr(fd) #from someone far smarter than myself
         try:
             tty.setraw(fd)
             ch = sys.stdin.read(1)
+            return ch
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        try:
-            return ch.decode('UTF-8')
-        except UnicodeDecodeError: #ignore special keys
-            ch = sys.stdin.read(1) #this might not work the same way...
-            
 
 def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
     global targetwordcount
@@ -71,7 +66,7 @@ def getprojectname(): #try catch to ensure valid output file
     print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
     projectname = input("Project Title? ")
     try: #trycatch to ensure can read the entered projectname
-        f = open(projectname + ".txt", 'r')
+        f = open("" + projectname + ".txt", 'r')
         try:
             first = f.readline
             ()
@@ -83,7 +78,7 @@ def getprojectname(): #try catch to ensure valid output file
                       + str(targetwordcount))
     except IOError: #if it doesn't already exist...
         try:
-            f = open(projectname + ".txt", 'w') #create it
+            f = open("" + projectname + ".txt", 'w') #create it
             clear_screen()
             print ("New Project " + projectname + ".txt created. Now type.\n"
                    + str(targetwordcount))
