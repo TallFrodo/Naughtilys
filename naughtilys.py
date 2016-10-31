@@ -16,10 +16,10 @@
 
 #*****IMPORTS*****
 try:
-    import msvcrt,os,sys,time #MS specific imports
+    import os,sys,time,msvcrt #MS specific imports
     host_os = "ms"
 except:
-    import tty,os,sys,time,termios #OSX / Unix(hopefully) imports
+    import os,sys,time,tty,termios #OSX / Unix(hopefully) imports
     host_os = "unix"
     
     
@@ -37,11 +37,21 @@ def get_char_input(host_os): #cross-os return keypress
         except UnicodeDecodeError: #ignore anything like arrow keys, etc
             msvcrt.getch() #discard next input -most problem are keys 2 bytes
             return "Hmm?"
-        finally:
-            pass
         
     if host_os == "unix":
-        return ""
+        #import termios,sys,tty
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        try:
+            return ch.decode('UTF-8')
+        except UnicodeDecodeError: #ignore special keys
+            ch = sys.stdin.read(1) #this might not work the same way...
+            
 
 def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
     global targetwordcount
@@ -54,8 +64,6 @@ def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
         clear_screen()
         print("That wasn't a number I understand sorry.")
         gettargetwordcount()
-    except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
-        sys.exit()
 
 def getprojectname(): #try catch to ensure valid output file
     global projectname, targetwordcount
