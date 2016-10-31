@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #AUTHOR: Samuel MacDonald
 #PURPOSE: Very Minimalist Word Processor for NaNoWriMo and the like
-#Not associated with Nautilus or ILYS or NaNoWriMo or anything else remotely reputable
+#Not associated with Nautilus or ILYS or NaNoWriMo or anything else
+# remotely reputable
 #KNOWN ISSUES:
     #Doesn't work in IDLE
     #Wordcount is dodgy
@@ -15,27 +16,31 @@
 
 #*****IMPORTS*****
 try:
-    import msvcrt,os,sys,time #MS specific tools to get character and clear screen. Will need jimmying if you want other OSes
+    import msvcrt,os,sys,time #MS specific imports
+    host_os = "ms"
 except:
-    import tty,os,sys,time
-    print("Missing system files. Your OS probably isn't supported.")
-
+    import tty,os,sys,time,termios #OSX / Unix(hopefully) imports
+    host_os = "unix"
+    
+    
 #*****INITIALISE GLOBAL VARS*****
 output = projectname = ""
 wordcount = targetwordcount = lastchar = 0
 
-def _clearscreen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+def clear_screen(): #cross-os clearscreen function
+    os.system('cls' if os.name == 'nt' else 'clear') #use host_os instead?
 
-def gettargetwordcount(): #try catch to make sure the wordcount is a valid integer
+def getch
+
+def gettargetwordcount(): #try catch to make sure the wordcount is a valid int
     global targetwordcount
     userinput = input("Desired word count? ")
     try:
         targetwordcount = int(userinput)
-        _clearscreen()
+        clear_screen()
         getprojectname()
     except ValueError:
-        _clearscreen()
+        clear_screen()
         print("That wasn't a number I understand sorry.")
         gettargetwordcount()
     except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
@@ -43,7 +48,7 @@ def gettargetwordcount(): #try catch to make sure the wordcount is a valid integ
 
 def getprojectname(): #try catch to ensure valid output file
     global projectname, targetwordcount
-    _clearscreen()
+    clear_screen()
     print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
     projectname = input("Project Title? ")
     try: #trycatch to ensure can read the entered projectname
@@ -52,50 +57,57 @@ def getprojectname(): #try catch to ensure valid output file
             first = f.readline
             ()
             for last in f: pass
-            print("Your last line was: '" + last + "'. Now type.\n" + str(targetwordcount))
+            print("Your last line was: '" + last + "'. Now type.\n"
+                  + str(targetwordcount))
         except UnboundLocalError:
-                print("Nothing at " + projectname + ".txt. Get Typing \n" + str(targetwordcount))
+                print("Nothing at " + projectname + ".txt. Get Typing \n"
+                      + str(targetwordcount))
     except IOError: #if it doesn't already exist...
         try:
             f = open(projectname + ".txt", 'w') #create it
-            _clearscreen()
-            print ("New Project " + projectname + ".txt created. Now type.\n" + str(targetwordcount))
+            clear_screen()
+            print ("New Project " + projectname + ".txt created. Now type.\n"
+                   + str(targetwordcount))
         except IOError: #if that fails too, ask for a new name
-            _clearscreen()
-            print ("Couldn't find or create " + projectname + ".txt. Try another.")
+            clear_screen()
+            print ("Couldn't find or create " + projectname
+                   + ".txt. Try another.")
             getprojectname()
         
-def endloop(): #function called to close the program under normal circumstances
+def endloop(): #standard way to close the program under normal circumstances
     global wordcount, projectname
     print (output) #print what you've gotten so far
     if lastchar == 1: #if lastchar wasn't blank
         wordcount = wordcount+1#add the word they were working on
-    print ("Finished. Session word count (spaces and newlines): " + str(wordcount)) #output estimated wordcount
+    print ("Finished. Session word count (spaces and newlines): "
+           + str(wordcount)) #output estimated wordcount
     with open(projectname + ".txt", 'a+') as outfile: 
         outfile.write(output) #open file named test.txt in append mode
     quitter()
 
 def quitter():
     global projectname
-    input("Check that you can see " + projectname + ".txt before pressing Enter to close")
+    input("Check that you can see " + projectname
+          + ".txt before pressing Enter to close")
     sys.exit()
         
 def autosave():
     global wordcount, projectname
     if wordcount % 50 == 0: #every 50 words
-        _clearscreen()
-        print ("***AUTOSAVE***\n" + str(targetwordcount - wordcount)) #output estimated wordcount
+        clear_screen() #replace normal blank output with autosave announcement
+        print ("***AUTOSAVE***\n" + str(targetwordcount - wordcount))
         with open(projectname + ".bak", 'a+') as outfile: 
             outfile.write(output) #open file named test.txt in append mode
     if wordcount % 500 == 0: #every 500 words
-        _clearscreen()
-        print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount)) #output estimated wordcount
-        with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'a+') as outfile: 
+        clear_screen() #replace normal blank output with backup announcement
+        print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount))
+        with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'a+') \
+             as outfile: 
             outfile.write(output) #open file named test.txt in append mode
                 
 
 #ACTUAL START OF PROGRAM HERE
-_clearscreen()
+clear_screen()
 print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
 try:
     gettargetwordcount()
@@ -103,10 +115,10 @@ except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
     input("Press Enter to quit")
     sys.exit()
 
-while 1: #msvcrt.kbhit: #main loop - whenever there's something in the keyboard buffer
+while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
     try:
-        char = msvcrt.getch().decode('UTF-8') #getchar raw byte, convert it as UTF-8
-        _clearscreen()
+        char = msvcrt.getch().decode('UTF-8') #getchar raw byte &convert UTF-8
+        clear_screen()
         if char == chr(27): #if it sees escape
             endloop()
             break
@@ -118,7 +130,7 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the keyboard 
             
         elif char == chr(13): #if it sees carriage return 
             if lastchar == 1: #make sure lastchar wasn't blank
-                output = output+char+'\n' #catch carriage returns as newlines for formatting's sake
+                output = output+char+'\n' #format carriage returns as \n 
                 lastchar = 0 #mark lastchar as being blank
             print ("") #print a blank line
             
@@ -127,15 +139,15 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the keyboard 
             output = output+char #concatenate this character to output string
             print (char), #otherwise print it
         #get wordcount:
-        wordcount = output.count(' ') + output.count('\n') #count the spaces and carriage returns
-        if wordcount >= targetwordcount: #breakout if they reach target wordcount
+        wordcount = output.count(' ') + output.count('\n') #easy wordcount hack
+        if wordcount >= targetwordcount: #break if they reach target wordcount
             endloop()
             break
         else :
             print(targetwordcount - wordcount) #show remaining wordcount
             if wordcount > 1 & lastchar == 0:
-                autosave() #if you haven't just autosaved, check if it needs to again
+                autosave() #on blank, see if autosave is needed
     except UnicodeDecodeError: #ignore anything like arrow keys, etc
-        _clearscreen()
+        clear_screen()
         print("Hmm?\n"+ str(targetwordcount - wordcount))
-        msvcrt.getch() #discard the next input because most problem keys are two bytes
+        msvcrt.getch() #discard the next input -most problem keys are two bytes
