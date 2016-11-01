@@ -45,6 +45,8 @@ def get_char_input(host_os): #cross-os return keypress
             tty.setraw(fd)
             ch = sys.stdin.read(1)
             return ch
+        except:
+            return "Hmm?"
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
@@ -147,7 +149,7 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
     elif char == "Hmm?":
-        print ("Hmm?\n" + (targetwordcount - wordcount))
+        print ("Hmm?")
             
     else: #if it wasn't space, return or esc:
         lastchar = 1 #set lastchar to not blank
