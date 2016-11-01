@@ -70,8 +70,6 @@ def getprojectname(): #try catch to ensure valid output file
     try: #trycatch to ensure can read the entered projectname
         f = open("" + projectname + ".txt", 'r')
         try:
-            first = f.readline
-            ()
             for last in f: pass
             print("Your last line was: '" + last + "'. Now type.\n"
                   + str(targetwordcount))
@@ -92,13 +90,19 @@ def getprojectname(): #try catch to ensure valid output file
         
 def endloop(): #standard way to close the program under normal circumstances
     global wordcount, projectname
+    total_words = 0 #initialise cumulative word count 
     print (output) #print what you've gotten so far
     if lastchar == 1: #if lastchar wasn't blank
         wordcount = wordcount+1#add the word they were working on
-    print ("Finished. Session word count (spaces and newlines): "
+    print ("Finished. Session word count: "
            + str(wordcount)) #output estimated wordcount
     with open(projectname + ".txt", 'a+') as outfile: 
         outfile.write(output) #open file named test.txt in append mode
+        with open(projectname + ".txt", 'r') as f: #read again to get wordcount this is dodge
+            for line in f: #get cumulative wordcount
+                total_words = total_words + (line.count(' ') + line.count('\n'))
+        # output cumulative wordcount
+    print ("Cumulative word count is like " + str(total_words))
     quitter()
 
 def quitter():
