@@ -164,6 +164,12 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
         else:
             print(previous_key) #otherwise display new lastletter
 
+    elif char == chr(96): #on backtick show last 30 characters
+        if len(output) > 30: print("Sneaky Peek: " + output[-30:])
+        else:
+            under30 = len(output) #or at least those that exist so far
+            print ("The story so far: " + output[-under30:])
+
     else: #if it wasn't space, return or esc:
         lastchar = 1 #set lastchar to not blank
         output = output+char #concatenate this character to output string
