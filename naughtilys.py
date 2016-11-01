@@ -152,13 +152,22 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
             output = output+char+'\n' #format carriage returns as \n 
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
-    elif char == "Hmm?":
+    elif char == "Hmm?": #catch invalid inputs (still broken for mac)
         print ("Hmm?")
-            
+        
+    elif char == chr(8) and lastchar == 1 and len(output) > 1: #on backspace
+        output = output[:-1] #remove last letter from output
+        previous_key = output[-1]#name the new latest key
+        if (previous_key == ' ' or previous_key == '\n'): #if blank
+            lastchar = 0 #reset lastchar to blank
+            print("No Backsies") #and inform user 
+        else:
+            print(previous_key) #otherwise display new lastletter
+
     else: #if it wasn't space, return or esc:
         lastchar = 1 #set lastchar to not blank
         output = output+char #concatenate this character to output string
-        print (char), #otherwise print it
+        print (char) #otherwise print it
     #get wordcount:
     wordcount = output.count(' ') + output.count('\n') #easy wordcount hack
     if wordcount >= targetwordcount: #break if they reach target wordcount
