@@ -165,6 +165,7 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
             print(previous_key) #otherwise display new lastletter
 
     elif char == chr(96): #on backtick show last 30 characters
+        targetwordcount +=1
         if len(output) > 30: print("Sneaky Peek: " + output[-30:])
         else:
             under30 = len(output) #or at least those that exist so far
