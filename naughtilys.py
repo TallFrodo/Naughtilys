@@ -90,7 +90,7 @@ def getprojectname(): #try catch to ensure valid output file
         
 def endloop(): #standard way to close the program under normal circumstances
     global wordcount, projectname
-    total_words = 0 #initialise cumulative word count 
+    total_words = wordcount #initialise cumulative word count 
     print (output) #print what you've gotten so far
     if lastchar == 1: #if lastchar wasn't blank
         wordcount = wordcount+1#add the word they were working on
@@ -99,10 +99,10 @@ def endloop(): #standard way to close the program under normal circumstances
     with open(projectname + ".txt", 'a+') as outfile: 
         outfile.write(output) #open file named test.txt in append mode
         with open(projectname + ".txt", 'r') as f: #read again to get wordcount this is dodge
-            for line in f: #get cumulative wordcount
-                total_words = total_words + (line.count(' ') + line.count('\n'))
+            for line in f: #get cumulative wordcount (one per line + all spaces)
+                total_words = total_words + 1 + line.count(' ')
         # output cumulative wordcount
-    print ("Cumulative word count is like " + str(total_words))
+    print ("Cumulative word count is something like " + str(total_words))
     quitter()
 
 def quitter():
@@ -128,7 +128,7 @@ def autosave():
 
 #ACTUAL START OF PROGRAM HERE
 clear_screen()
-print("Welcome to Naughtilys - Press Ctrl+C or ESC to quit early.")
+print("Welcome to Naughtilys - Ctrl+C or ESC to quit early or [~`] for a sneaky peek")
 try:
     gettargetwordcount()
 except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
