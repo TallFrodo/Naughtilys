@@ -116,8 +116,8 @@ def autosave():
     if wordcount % 50 == 0: #every 50 words
         clear_screen() #replace normal blank output with autosave announcement
         print ("***AUTOSAVE***\n" + str(targetwordcount - wordcount))
-        with open(projectname + ".bak", 'a+') as outfile: 
-            outfile.write(output) #open file named test.txt in append mode
+        with open(projectname + ".bak", 'w+') as outfile: 
+            outfile.write(output) #overwite .bak file
     if wordcount % 500 == 0: #every 500 words
         clear_screen() #replace normal blank output with backup announcement
         print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount))
