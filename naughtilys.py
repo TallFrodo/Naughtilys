@@ -121,9 +121,9 @@ def autosave():
     if wordcount % 500 == 0: #every 500 words
         clear_screen() #replace normal blank output with backup announcement
         print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount))
-        with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'a+') \
+        with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'w+') \
              as outfile: 
-            outfile.write(output) #open file named test.txt in append mode
+            outfile.write(output) #overwrite .bak file
                 
 
 #ACTUAL START OF PROGRAM HERE
