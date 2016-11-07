@@ -147,15 +147,11 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
         
-    elif char == chr(13) and len(output) > 1: #if it sees carriage return
-        previous_key = output[-1]#check the latest key
-        if previous_key == " ": #if previous key was space
-            output = output[:-1]+"\n" #replace it with \n for formatting
-        if lastchar == 1: #if last character wasn't blank
-            output = output+char+"\n" #format carriage returns as \n 
+    elif char == chr(13): #if it sees carriage return 
+        if lastchar == 1: #make sure lastchar wasn't blank
+            output = output+char+'\n' #format carriage returns as \n 
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
-        
     elif char == "Hmm?": #catch invalid inputs (still broken for mac)
         print ("Hmm?")
         
