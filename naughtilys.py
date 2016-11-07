@@ -15,6 +15,7 @@
     #Fix function names
 
 #*****IMPORTS*****
+
 try:
     import os,sys,time,msvcrt #MS specific imports
     host_os = "ms"
@@ -98,7 +99,7 @@ def endloop(): #standard way to close the program under normal circumstances
            + str(wordcount)) #output estimated wordcount
     with open(projectname + ".txt", 'a+') as outfile: 
         outfile.write(output) #open file named test.txt in append mode
-        with open(projectname + ".txt", 'r') as f: #read again to get wordcount this is dodge
+        with open(projectname + ".txt", 'r') as f: #read again to get wordcount
             for line in f: #get cumulative wordcount (one per line + all spaces)
                 total_words = total_words + 1 + line.count(' ')
         # output cumulative wordcount
@@ -116,13 +117,19 @@ def autosave():
     if wordcount % 50 == 0: #every 50 words
         clear_screen() #replace normal blank output with autosave announcement
         print ("***AUTOSAVE***\n" + str(targetwordcount - wordcount))
-        with open(projectname + ".bak", 'w+') as outfile: 
+        with open(projectname + ".bak", 'w+') as outfile: #open or create a .bak
+            with open(projectname + ".txt",'r') as infile: #copy in exiting proj
+                for line in infile:
+                    outfile.write(line)
             outfile.write(output) #overwite .bak file
     if wordcount % 500 == 0: #every 500 words
         clear_screen() #replace normal blank output with backup announcement
         print ("***BACKUP CREATED***\n" + str(targetwordcount - wordcount))
         with open(projectname + time.strftime('%Y%m%d%H%M') + ".bak", 'w+') \
-             as outfile: 
+             as outfile: #create new unique .bak file
+            with open(projectname + ".txt",'r') as infile: #copy in exiting proj
+                for line in infile:
+                    outfile.write(line)
             outfile.write(output) #overwrite .bak file
                 
 
@@ -147,10 +154,13 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
         
-    elif char == chr(13): #if it sees carriage return 
-        if lastchar == 1: #make sure lastchar wasn't blank
-            output = output+char+'\n' #format carriage returns as \n 
-            lastchar = 0 #mark lastchar as being blank
+    elif char == chr(13) and len(output) > 1: #if it sees carriage return
+        previous_key = output[-1]#check the latest key
+        if previous_key == " ": #if previous key was space
+            output = output[:-1]+"\n" #replace it with \n for formatting
+        if lastchar == 1: #if last character wasn't blank
+            output = output+char+"\n" #format carriage returns as \n 
+        lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
     elif char == "Hmm?": #catch invalid inputs (still broken for mac)
         print ("Hmm?")
