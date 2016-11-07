@@ -145,16 +145,16 @@ except KeyboardInterrupt: #catch any -Ctrl+C inputs neatly
 while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
     char = get_char_input(host_os) #get keyinput based on OS
     clear_screen()
-    if char == chr(27): #if it sees escape
+    if char == chr(27): #on ESCAPE KEY
         endloop()
         break
-    elif char == chr(32): #if it sees a space
+    elif char == chr(32): #on SPACE BAR
         if lastchar == 1: #make sure lastchar wasn't blank
             output = output+char #concatenate the space
             lastchar = 0 #mark lastchar as being blank
         print ("") #print a blank line
         
-    elif char == chr(13) and len(output) > 1: #if it sees carriage return
+    elif char == chr(13) and len(output) > 1: #on CARRIAGE RETURN
         previous_key = output[-1]#check the latest key
         if previous_key == " ": #if previous key was space
             output = output[:-1]+"\n" #replace it with \n for formatting
@@ -165,23 +165,28 @@ while 1: #msvcrt.kbhit: #main loop - whenever there's something in the kb buffer
     elif char == "Hmm?": #catch invalid inputs (still broken for mac)
         print ("Hmm?")
         
-    elif char == chr(8) and lastchar == 1 and len(output) > 1: #on backspace
-        output = output[:-1] #remove last letter from output
-        previous_key = output[-1]#name the new latest key
-        if (previous_key == ' ' or previous_key == '\n'): #if blank
-            lastchar = 0 #reset lastchar to blank
-            print("No Backsies") #and inform user 
-        else:
-            print(previous_key) #otherwise display new lastletter
+    elif char == chr(8): #on BACKSPACE
+        if len(output) >1: #if there's something to delete
+            if lastchar == 1: #if lastchar wasn't \n or space
+                output = output[:-1] #remove last letter from output
+                previous_key = output[-1]#name the new latest key
+                print(previous_key) #display new last key
+                if (previous_key == ' ' or previous_key == '\n'): #if blank
+                    lastchar = 0 #update lastchar to blank
+            elif lastchar == 0: #if they try and backspace a blank
+                print("No Backsies") #tell user to harden up
+        else: #if they haven't started writing
+            print("Nothing to delete.") #inform user
 
-    elif char == chr(96): #on backtick show last 30 characters
-        targetwordcount +=1
+    elif char == chr(96): #on BACKTICK
+        targetwordcount +=1 #increment wordcount as punishment
         if len(output) > 30: print("Sneaky Peek: " + output[-30:])
+        #and show last 30 characters
         else:
             under30 = len(output) #or at least those that exist so far
             print ("The story so far: " + output[-under30:])
 
-    else: #if it wasn't space, return or esc:
+    else: #if it wasn't space, return, esc, etc.
         lastchar = 1 #set lastchar to not blank
         output = output+char #concatenate this character to output string
         print (char) #otherwise print it
